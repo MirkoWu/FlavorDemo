@@ -28,7 +28,7 @@ buildscript {
 //        classpath("com.nio.android.lego:lg-common-gradle-plugin:2.9.0-SNAPSHOT")
 //        classpath("com.nio.android.lego:lg-deps-gradle-plugin:2.9.0-SNAPSHOT")
 //        classpath("androidx.navigation:navigation-safe-args-gradle-plugin:2.3.5")
-        classpath("com.vanniktech:gradle-maven-publish-plugin:0.19.0")
+//        classpath("com.vanniktech:gradle-maven-publish-plugin:0.19.0")
     }
 }
 
