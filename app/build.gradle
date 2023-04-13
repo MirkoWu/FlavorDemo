@@ -1,21 +1,25 @@
-plugins {
-    id("kotlin-android")
-    id("kotlin-kapt")
-    id ("com.android.application")
-    id ("org.jetbrains.kotlin.android")
-}
+//plugins {
+//    id("kotlin-android")
+//    id("kotlin-kapt")
+//    id ("com.android.application")
+//    id ("org.jetbrains.kotlin.android")
+//}
+
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
 //apply (from= project.rootProject.uri("flavor-plugin.gradle"))
 
 android {
     namespace = "com.example.flavordemo"
-    compileSdk = 33
+
+    compileSdkVersion    33
 
     defaultConfig {
-        applicationId = "com.example.flavordemo"
-        minSdk = 24
-        targetSdk = 33
-        versionCode = 1
-        versionName = "1.0"
+        applicationId   "com.example.flavordemo"
+        minSdkVersion   24
+        targetSdkVersion   33
+        versionCode   1
+        versionName   "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -39,7 +43,7 @@ android {
     }
 
 //    定义风味维度
-    flavorDimensions ("channel")
+    flavorDimensions "channel"
 
     //声明产品风味
     productFlavors {

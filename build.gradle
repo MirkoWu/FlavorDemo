@@ -9,7 +9,7 @@
 buildscript {
 //    apply(from =  "flavor-plugin.gradle.kts")
     repositories {
-        maven { url = uri("https://jitpack.io") }
+        maven { url  "https://jitpack.io" }
         google()
         mavenCentral()
 //        maven {
@@ -17,14 +17,14 @@ buildscript {
 //        }
     }
 
-    configurations.classpath {
-        // check for updates every time
-        resolutionStrategy.cacheChangingModulesFor(0, TimeUnit.SECONDS)
-    }
+//    configurations.classpath {
+//        // check for updates every time
+//        resolutionStrategy.cacheChangingModulesFor(0, TimeUnit.SECONDS)
+//    }
 
     dependencies {
-        classpath("com.android.tools.build:gradle:7.4.2")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.31")
+        classpath "com.android.tools.build:gradle:4.2.2"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.31"
 //        classpath("com.nio.android.lego:lg-common-gradle-plugin:2.9.0-SNAPSHOT")
 //        classpath("com.nio.android.lego:lg-deps-gradle-plugin:2.9.0-SNAPSHOT")
 //        classpath("androidx.navigation:navigation-safe-args-gradle-plugin:2.3.5")
@@ -37,18 +37,16 @@ subprojects {
 //        maven {
 //            url = uri("https://artifactory.nioint.com/artifactory/dd-maven-public-virtual/")
 //        }
-        maven { url = uri("https://jitpack.io") }
+        maven { url  "https://jitpack.io" }
         google()
         mavenCentral()
         mavenLocal()
     }
 
-    configurations.all {
-        resolutionStrategy {
-            cacheChangingModulesFor(0, TimeUnit.SECONDS)
-        }
-    }
-//    this.getTasksByName("android",false) {
-//        missingDimensionStrategy ("channel", "second")
+//    configurations.all {
+//        resolutionStrategy {
+//            cacheChangingModulesFor(0, TimeUnit.SECONDS)
+//        }
 //    }
+
 }

@@ -1,31 +1,25 @@
-plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.android")
-//    id ("com.vanniktech.maven.publish")
+//plugins {
+//    id("com.android.library")
+//    id("org.jetbrains.kotlin.android")
+//}
+//apply (from= project.rootProject.uri("flavor-plugin.gradle"))
 
-}
-apply (from= project.rootProject.uri("flavor-plugin.gradle"))
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply from: ".././flavor-plugin.gradle"
 
 android {
     namespace = "com.example.lib"
-    compileSdk = 33
 
-    defaultConfig {
-        minSdk = 24
-        targetSdk = 33
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles("consumer-rules.pro")
-    }
 
     buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
+//        release {
+//            isMinifyEnabled = false
+//            proguardFiles(
+//                getDefaultProguardFile("proguard-android-optimize.txt"),
+//                "proguard-rules.pro"
+//            )
+//        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
