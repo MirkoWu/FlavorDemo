@@ -1,0 +1,184 @@
+apply plugin: 'com.android.library'
+apply plugin: 'org.jetbrains.kotlin.android'
+//apply plugin: 'com.vanniktech.maven.publish'
+apply plugin: 'maven-publish'
+
+//关于flavor的更多信息，查看https://developer.android.google.cn/studio/build/build-variants?hl=zh-cn#groovy
+
+//这里可以进行项目lib统一配置
+android {
+    compileSdkVersion 33
+//
+    defaultConfig {
+        minSdkVersion 24
+        targetSdkVersion 33
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles("consumer-rules.pro")
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            //proguardFiles getDefaultProguardFile("proguard-android-optimize.txt") "proguard-rules.pro"
+
+        }
+    }
+//    定义风味维度
+    flavorDimensions "channel"/* ,"pay"*/ //可以有多个，多个会进行组合
+    //声明产品风味
+    productFlavors {
+        //声明风味
+        first {
+            //指定风味维度
+            dimension "channel"
+            // 配置缺失维度策略，第一个参数是维度的名称，第二个维度是该维度对应的风味
+            missingDimensionStrategy "channel", "first"/*, "second"*/
+            //注意这里不设定的话，变体会和main中进行合并/覆盖，如果指定了则排除了main
+//            sourceSets {
+//                main.java.srcDirs = ['src/first/java']
+//                main.resources.srcDirs = ['src/first/res']
+//            }
+
+            //当依赖库中不包含当前风味，可以指定替代，取列表中的可用的第一个风味
+            // matchingFallbacks = ['debug', 'qa', 'release']
+        }
+        second {
+            dimension "channel"
+            missingDimensionStrategy "channel", "second"/*,"first"*/
+            //注意这里不设定的话，变体会和main中进行合并/覆盖，如果指定了则排除了main
+//            sourceSets {
+//                main.java.srcDirs = ['src/second/java']
+//                main.resources.srcDirs = ['src/second/res']
+//            }
+        }
+    }
+
+    //过滤变种
+//    variantFilter { variant ->
+//        def names = variant.flavors*.name
+//        // To check for a certain build type, use variant.buildType.name == "<buildType>"
+//        if (names.contains("minApi21") && names.contains("demo")) {
+//            // Gradle ignores any variants that satisfy the conditions above.
+//            setIgnore(true)
+//        }
+//    }
+
+}
+
+//
+//// Master task that will publish all variants
+//def DefaultTask masterTask = project.tasks.create("installArchives", DefaultTask)
+//
+//
+//android.libraryVariants.all { variant ->
+//
+//    variant.outputs.forEach { output ->
+//
+//        // Configuration defines which artifacts will be published, create one configuration for each variant output (artifact)
+//        def Configuration variantConfiguration = project.configurations.create("${variant.name}Archives")
+//        project.artifacts.add(variantConfiguration.name, output.packageLibrary)
+////        project.artifacts.add(variantConfiguration.name, variant.packageLibrary)
+//
+//        // Create one Upload type task for each configuration
+//        def Upload variantTask = project.tasks.create("${variant.name}Install", Upload)
+//        variantTask.configuration = variantConfiguration
+//
+////        variantTask.repositories.mavenInstaller {
+////            pom.groupId = "com.yourcompany"
+////            pom.artifactId = "yourLibrary"
+////            pom.version = "1.0.0-${variant.name}" //Give a different version for each variant
+////            pom.packaging = "aar"
+////        }
+//
+//        // Make all tasks depend on each other and on master task
+//        masterTask.dependsOn(variantTask)
+//        masterTask = variantTask
+//    }
+//    false
+//}
+//
+//这是官方的 apply plugin: 'maven-publish' 的配置
+//上传源码，支持java和kotlin
+task sourceJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier 'sources'
+}
+//publishing {
+//    publications {
+//        library(MavenPublication) {
+//            // 使用方引用 implementation 'com.mirko.android:lib:1.0.0-SNAPSHOT'
+//            groupId 'com.mirko.android'
+//            artifactId project.name
+//            version project.name
+//
+//            // 必须有这个 否则不会上传AAR包
+//            afterEvaluate { artifact(tasks.getByName("bundleFirstReleaseAar")) }
+//            // 上传source，这样使用方可以看到方法注释
+//            artifact sourceJar
+//        }
+//    }
+//}
+//def String flavorName = ""
+//
+////def String flavor= android.libraryVariants.get(0)
+//
+//task publishingFlavor() {
+//    android.libraryVariants.all { variant ->
+//        def String buildType = variant.buildType.name
+//        flavorName = variant.flavorName
+//        println("buildType=" + variant.buildType.name)
+//        println("variant=" + variant.flavorName)
+//
+//        //遍历发布变种的release包
+//        if ("release".equals(buildType)) {
+//           // tasks.publishToMavenLocal.execute()
+//        }
+//    }
+//}
+//
+//afterEvaluate {// components.release 只有在配置完成之后，才能拿到值
+//    println("variant=------" + android.libraryVariants.size())
+//    publishing {
+//        // 配置maven 仓库
+//        repositories { RepositoryHandler handler ->
+//            handler.mavenLocal()
+//        }
+//        publications { PublicationContainer publicationContainer ->
+//            println("publications=------")
+//
+//            maven(MavenPublication) {
+////                from components.release // 注释1:使用 Android Gradle 插件生成的组件，作为发布的内容,包含aar和依赖关系
+//                from components."${flavorName}Release"
+//                // 注释1:使用 Android Gradle 插件生成的组件，作为发布的内容,包含aar和依赖关系
+//                artifact sourceJar // 上传源码
+//
+////            // 使用方引用 implementation 'com.mirko.android:lib:1.0.0-SNAPSHOT'
+//                groupId = "com.mirko.android"
+//                artifactId = project.name + "." + flavorName
+//                version = "1.0.0-SNAPSHOT"
+//            }
+//        }
+//    }
+//}
+
+
+////这是 另一个 apply plugin: 'com.vanniktech.maven.publish' 的配置
+//mavenPublish {
+//    sonatypeHost = null
+//    releaseSigningEnabled = false
+////    androidVariantToPublish = "firstDebug"
+//    androidVariantToPublish = "firstRelease"
+//}
+
+
+
+
+

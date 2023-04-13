@@ -1,0 +1,135 @@
+plugins {
+    id("com.android.library")
+    id("org.jetbrains.kotlin.android")
+//    id ("com.vanniktech.maven.publish")
+
+}
+apply (from= project.rootProject.uri("flavor-plugin.gradle"))
+
+android {
+    namespace = "com.example.lib"
+    compileSdk = 33
+
+    defaultConfig {
+        minSdk = 24
+        targetSdk = 33
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles("consumer-rules.pro")
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
+//    //定义风味维度
+//    flavorDimensions ("channel")
+//
+//    //声明产品风味
+//    productFlavors {
+//        //声明风味
+//        create("first"){
+//            //指定风味维度
+//            dimension = "channel"
+//            //missingDimensionStrategy ("channel", "first")
+//        }
+//        create("second") {
+//            dimension = "channel"
+//            //missingDimensionStrategy ("channel", "second")
+//        }
+//    }
+
+}
+//println("variant=------"+android.libraryVariants.size)
+//task("printss") {
+//    android.libraryVariants.all { variant ->
+//        println("variant="+variant.buildType.name)
+//        variant.outputs.forEach { output ->
+//            println("variant.outputs="+output)
+//
+//        }
+//        return@all false
+//    }
+//}
+
+//
+//// Master task that will publish all variants
+//var  masterTask:DefaultTask = project.tasks.create("installArchives", DefaultTask::class.java)
+
+//
+//android.libraryVariants.all { variant ->
+//    variant.packageLibrary
+//    variant.outputs.forEach { output ->
+//
+//        // Configuration defines which artifacts will be published, create one configuration for each variant output (artifact)
+//        var  variantConfiguration:Configuration = project.configurations.create("${variant.name}Archives")
+////        project.artifacts.add(variantConfiguration.name, output .packageLibrary)
+//        project.artifacts.add(variantConfiguration.name, variant.packageLibrary)
+//
+//        // Create one Upload type task for each configuration
+//        var  variantTask:Upload = project.tasks.create("${variant.name}Install", Upload::class.java)
+//        variantTask.configuration = variantConfiguration
+//
+////        variantTask.repositories.mavenInstaller { pom->
+////            pom.groupId = "com.yourcompany"
+////            pom.artifactId = "yourLibrary"
+////            pom.version = "1.0.0-${variant.name}" //Give a different version for each variant
+////            pom.packaging = "aar"
+////        }
+//
+//        // Make all tasks depend on each other and on master task
+//        masterTask.dependsOn(variantTask)
+//                masterTask = variantTask
+//    }
+//    false
+//}
+
+
+//publishing {
+//    repositories {
+//        maven {
+//            project.configParams()
+//            val releasesRepoUrl = "https://artifactory.nioint.com/artifactory/dd-maven-releases-virtual/"
+//            val snapshotsRepoUrl = "https://artifactory.nioint.com/artifactory/dd-maven-snapshots-virtual/"
+//            url = uri(
+//                if (!project.buildRelease) snapshotsRepoUrl else releasesRepoUrl
+//            )
+//            isAllowInsecureProtocol = true
+//            credentials {
+//                username = project.repositoryUsername
+//                password = project.repositoryPassword
+//            }
+//        }
+//    }
+//}
+
+
+//mavenPublish {
+//    sonatypeHost = null
+//    releaseSigningEnabled = false
+//    androidVariantToPublish = "demoDebug"
+//}
+
+
+dependencies {
+
+    implementation("androidx.core:core-ktx:1.7.0")
+    implementation("androidx.appcompat:appcompat:1.4.1")
+    implementation("com.google.android.material:material:1.5.0")
+    testImplementation("junit:junit:4.13.2")
+    androidTestImplementation("androidx.test.ext:junit:1.1.3")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
+}

@@ -1,0 +1,4 @@
+rootProject.name = "FlavorDemo"
+include ':app'
+include ':lib'
+include ':lib2'
