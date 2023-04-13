@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'org.jetbrains.kotlin.android'
 //apply plugin: 'com.vanniktech.maven.publish'
-apply plugin: 'maven-publish'
+//apply plugin: 'maven-publish'
 
 //关于flavor的更多信息，查看https://developer.android.google.cn/studio/build/build-variants?hl=zh-cn#groovy
 
