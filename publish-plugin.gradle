@@ -1,0 +1,84 @@
+apply plugin: 'com.android.library'
+apply plugin: 'org.jetbrains.kotlin.android'
+//apply plugin: 'com.vanniktech.maven.publish'
+apply plugin: 'maven-publish'
+
+//关于flavor的更多信息，查看https://developer.android.google.cn/studio/build/build-variants?hl=zh-cn#groovy
+
+//maven发布相关信息： https://developer.android.com/studio/build/maven-publish-plugin?hl=zh-cn
+
+
+/**
+ * 不带变体的支持发布插件
+ */
+
+
+//这里可以进行项目lib统一配置
+android {
+    compileSdkVersion 30
+//
+    defaultConfig {
+        minSdkVersion 24
+        targetSdkVersion 30
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles("consumer-rules.pro")
+    }
+//    compileOptions {
+//        sourceCompatibility JavaVersion.VERSION_1_8
+//        targetCompatibility JavaVersion.VERSION_1_8
+//    }
+//    kotlinOptions {
+//        jvmTarget = "1.8"
+//    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            //proguardFiles getDefaultProguardFile("proguard-android-optimize.txt") "proguard-rules.pro"
+
+        }
+    }
+
+}
+
+//这是官方的 apply plugin: 'maven-publish' 的配置
+//上传源码，支持java和kotlin
+task sourceJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier 'sources'
+}
+afterEvaluate { // components.release 只有在配置完成之后，才能拿到值
+    publishing {
+        // 配置maven 仓库
+        repositories { RepositoryHandler handler ->
+            handler.mavenLocal()
+        }
+        publications { PublicationContainer publicationContainer ->
+            maven(MavenPublication) {
+                from components.release // 注释1:使用 Android Gradle 插件生成的组件，作为发布的内容,包含aar和依赖关系
+                // 注释1:使用 Android Gradle 插件生成的组件，作为发布的内容,包含aar和依赖关系
+                artifact sourceJar // 上传源码
+
+//            // 使用方引用 implementation 'com.mirko.android:lib:1.0.0-SNAPSHOT'
+                groupId = "com.mirko.android"
+                artifactId = project.name
+                version = "1.0.0-SNAPSHOT"
+            }
+        }
+    }
+}
+
+
+////这是 另一个 apply plugin: 'com.vanniktech.maven.publish' 的配置
+//mavenPublish {
+//    sonatypeHost = null
+//    releaseSigningEnabled = false
+////    androidVariantToPublish = "firstDebug"
+//    androidVariantToPublish = "firstRelease"
+//}
+
+
+
+
+

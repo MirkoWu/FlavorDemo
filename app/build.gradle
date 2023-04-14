@@ -61,7 +61,6 @@ android {
 
 }
 
-
 dependencies {
 
     implementation ("androidx.core:core-ktx:1.6.0")
@@ -71,8 +70,12 @@ dependencies {
     testImplementation ("junit:junit:4.13.2")
     androidTestImplementation ("androidx.test.ext:junit:1.1.3")
     androidTestImplementation ("androidx.test.espresso:espresso-core:3.4.0")
-    implementation(project(":lib"))
-    implementation(project(":lib2"))
+//    implementation(project(":lib"))
+//    implementation(project(":lib2"))
+//    implementation(project(":lib3"))
 //    implementation ("com.mirko.android:lib:1.0.0-SNAPSHOT")
-//    implementation ("com.mirko.android:lib2.second:1.0.0-SNAPSHOT")
+    implementation ("com.mirko.android:lib2-second:1.0.0-SNAPSHOT")
+//        implementation ("com.mirko.android:lib3:1.0.0-SNAPSHOT")
+//        implementation ("FlavorDemo:lib2:1.0.0-SNAPSHOT")
+
 }

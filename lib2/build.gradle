@@ -29,6 +29,7 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
 }
 
 dependencies {
@@ -40,4 +41,11 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
     implementation(project(":lib"))
+
+//    firstImplementation(project(":lib"))
+//    secondImplementation(project(":lib"))
+//    firstImplementation(project(path:":lib", configuration:"firstRelease"))
+//    secondImplementation(project(path:":lib", configuration:"secondRelease"))
+
+//    implementation(project(":lib3"))
 }

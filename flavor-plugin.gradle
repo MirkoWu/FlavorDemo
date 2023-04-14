@@ -63,7 +63,27 @@ android {
 //            }
         }
     }
+//    sourceSets.getByName("first") {
+//                main.java.srcDirs = ['src/first/java']
+//                main.resources.resDirs = ['src/first/res']
+//    }
+//    sourceSets.getByName("second") {
+//                main.java.srcDirs = ['src/second/java']
+//                main.resources.resDirs = ['src/first/res']
+//    }
 
+//    publishing {
+//        singleVariant("first"){}
+//        singleVariant("second")
+//        multipleVariants("first") {
+//            includeBuildTypeValues( "release")
+//            //includeFlavorDimensionAndValues("mode", "full")
+//        }
+//        multipleVariants("second") {
+//            includeBuildTypeValues( "release")
+//            //includeFlavorDimensionAndValues("mode", "full")
+//        }
+//    }
     //过滤变种
 //    variantFilter { variant ->
 //        def names = variant.flavors*.name
@@ -129,47 +149,275 @@ task sourceJar(type: Jar) {
 //        }
 //    }
 //}
-def String flavorName = ""
-
-task publishingFlavor() {
-    android.libraryVariants.all { variant ->
-        def String buildType = variant.buildType.name
-        flavorName = variant.flavorName
-        println("buildType=" + variant.buildType.name)
-        println("variant=" + variant.flavorName)
-
-        //遍历发布变种的release包
-        if ("release".equals(buildType)) {
-           // tasks.publishToMavenLocal.execute()
-        }
-    }
-}
+//def String flavorName = ""
 //
-afterEvaluate {// components.release 只有在配置完成之后，才能拿到值
+//task publishingFlavor() {
+//    android.libraryVariants.all { variant ->
+//        def String buildType = variant.buildType.name
+//        flavorName = variant.flavorName
+//        println("buildType=" + variant.buildType.name)
+//        println("variant=" + variant.flavorName)
+//
+//        //遍历发布变种的release包
+//        if ("release".equals(buildType)) {
+//           // tasks.publishToMavenLocal.execute()
+//        }
+//    }
+//}
+//
+
+//
+//def String flavorName = "first"
+////
+//task publishMutilFlavor(group: "publish") {
+//}
+//
+//
+//task publishToFirst(group: "publish") {
+//    dependsOn(publishToMavenLocal)
+//    doFirst{
+//        flavorName = "first"
+//    }
+//    doLast {
+//        println("publishToFirst flavorType=------${flavorName}")
+//        flavorName = "second"
+//        //tasks.getByName(publishToSecond).execute()
+//    }
+//    println("publishToFirst flavorType=------${flavorName}")
+//}
+//
+//task publishToSecond(group: "publish") {
+//    flavorName = "second"
+//    doFirst{
+//        flavorName = "second"
+//        println("publishToSecond doFirst flavorType=------${flavorName}")
+//
+//    }
+//    doLast {
+//        println("publishToSecond flavorType=------${flavorName}")
+//
+//    }
+//    println("publishToSecond flavorType=------${flavorName}")
+//    dependsOn(publishToMavenLocal)
+//
+//
+//
+//}
+//
+////
+//publishMutilFlavor.dependsOn(publishToSecond)
+//publishToSecond.dependsOn(publishToFirst)
+
+
+////这种能打包，但对于变体module 依赖变体module的情况，无法失败，导致发布失败，暂时只能支持，本身是变体module不依赖变体的module
+//所以这里暂时一次只发布一个变体，多个变体就多次发布。
+afterEvaluate { // components.release 只有在配置完成之后，才能拿到值
+
     println("variant=------" + android.libraryVariants.size())
+
     publishing {
         // 配置maven 仓库
         repositories { RepositoryHandler handler ->
             handler.mavenLocal()
         }
-        publications { PublicationContainer publicationContainer ->
-            println("publications=------")
+//    println("publishing customValue=------${customValue}")
+//    println("publishing flavorType=------${flavorName}")
+        println("publishing hasProperty=------${project.hasProperty('flavorName')}")
+        //通过gradle命令形式传参，如果没有对应参数，则不再执行
+        if (project.hasProperty('flavorName')) {
+            def flavorName =  project.property('flavorName')
 
-            maven(MavenPublication) {
+            publications { PublicationContainer publicationContainer ->
+                println("publications=------")
+//            println("flavorName=------${flavorName}")
+                "${project.name}${flavorName}"(MavenPublication) {
 //                from components.release // 注释1:使用 Android Gradle 插件生成的组件，作为发布的内容,包含aar和依赖关系
-                from components."${flavorName}Release"
-                // 注释1:使用 Android Gradle 插件生成的组件，作为发布的内容,包含aar和依赖关系
-                artifact sourceJar // 上传源码
-
+                    from components."${flavorName}Release"
+                    // 注释1:使用 Android Gradle 插件生成的组件，作为发布的内容,包含aar和依赖关系
+                    artifact sourceJar // 上传源码
+                    //用这种方法可以，但是依赖不全，即使手动补的，依然会丢失本地依赖，而直接用from components.release 则能保留全部依赖关系
+//                artifact(tasks.getByName("bundleFirstReleaseAar"))
 //            // 使用方引用 implementation 'com.mirko.android:lib:1.0.0-SNAPSHOT'
-                groupId = "com.mirko.android"
-                artifactId = project.name + "." + flavorName
-                version = "1.0.0-SNAPSHOT"
+                    groupId = "com.mirko.android"
+                    artifactId = project.name + "-${flavorName}"
+                    version = "1.0.0-SNAPSHOT"
+                }
+//            secondRelease(MavenPublication) {
+////                from components.release // 注释1:使用 Android Gradle 插件生成的组件，作为发布的内容,包含aar和依赖关系
+//                from components.secondRelease
+//                // 注释1:使用 Android Gradle 插件生成的组件，作为发布的内容,包含aar和依赖关系
+//                artifact sourceJar // 上传源码
+//                artifact(tasks.getByName("bundleSecondReleaseAar"))
+////            // 使用方引用 implementation 'com.mirko.android:lib:1.0.0-SNAPSHOT'
+//                groupId = "com.mirko.android"
+//                artifactId = project.name + "-second"
+//                version = "1.0.0-SNAPSHOT"
+//            }
+//            android.libraryVariants.all { variant ->
+//                String buildType = variant.buildType.name
+//                String flavorName = variant.flavorName
+////                if ("release".equals(buildType)) {
+//                if ("release".equals(buildType)) {
+////
+//                    "${project.name}${flavorName}${buildType}"(MavenPublication) {
+////                from components.release // 注释1:使用 Android Gradle 插件生成的组件，作为发布的内容,包含aar和依赖关系
+//                        from components."${flavorName}Release"
+//
+////                        def result = components."${flavorName}Release"
+////                        println("publications=------" + result.name)
+////                        from result
+//
+//
+//
+//                        // 注释1:使用 Android Gradle 插件生成的组件，作为发布的内容,包含aar和依赖关系
+//                        artifact sourceJar // 上传源码
+//
+////            // 使用方引用 implementation 'com.mirko.android:lib:1.0.0-SNAPSHOT'
+//                        groupId = "com.mirko.android"
+//                        artifactId = project.name + "-" + flavorName
+//                        version = "1.0.0-SNAPSHOT"
+////
+////////                           println("allDependencies=------${configurations}  ${configurations.getProperties()}")
+//////
+//////                        pom.withXml {
+//////
+//////                            configurations."implementation".allDependencies.each {
+//////                                println("allDependencies=------${it.group} ${it.name} ${it.version}")
+//////
+//////                                if(null != it.group) {
+//////                                    def dependencyNode = asNode().appendNode('dependencies').appendNode('dependency')
+//////                                    dependencyNode.appendNode('groupId', it.group)
+//////                                    dependencyNode.appendNode('artifactId', it.name)
+//////                                    dependencyNode.appendNode('version', it.version)
+//////                                }
+//////                            }
+//////                        }
+////
+//                    }
+//
+//
+//                }
+//            }
             }
         }
     }
+
+//    publishToFirst.dependsOn publishToMavenLocal
+//    publishToSecond.dependsOn publishToMavenLocal
 }
 
+//这个可以自己上传产物，但是依赖关系可能丢失
+//publishing {
+//    repositories { RepositoryHandler handler ->
+//        handler.mavenLocal()
+//    }
+//    publications { PublicationContainer publicationContainer ->
+//        android.libraryVariants.all { variant ->
+//            String buildType = variant.buildType.name
+//            String flavorName = variant.flavorName
+//            if ("release".equals(buildType)) {
+//                "${project.name}${flavorName}${buildType}"(MavenPublication) {
+//                    // 依赖 bundleReleaseAar 任务，并上传其产出的aar
+//                    def name = flavorName.substring(0, 1).toUpperCase() + flavorName.substring(1)
+//                    afterEvaluate { artifact(tasks.getByName("bundle${name}ReleaseAar")) }
+//                    artifact sourceJar
+//                    groupId = "com.mirko.android"
+//                    artifactId = project.name + "-" + flavorName
+//                    version = "1.0.0-SNAPSHOT"
+//                    // pom文件中声明依赖，从而传递到使用方
+////                    pom.withXml {
+////                        def dependenciesNode = asNode().appendNode('dependencies')
+////                        configurations.implementation.allDependencies.each {
+////                            // 避免出现空节点或 artifactId=unspecified 的节点
+////                            if (it.group != null && (it.name != null && "unspecified" != it.name) && it.version != null) {
+////                                println "dependency=${it.toString()}"
+////                                def dependencyNode = dependenciesNode.appendNode('dependency')
+////                                dependencyNode.appendNode('groupId', it.group)
+////                                dependencyNode.appendNode('artifactId', it.name)
+////                                dependencyNode.appendNode('version', it.version)
+////                                dependencyNode.appendNode('scope', 'implementation')
+////                            }
+////                        }
+////                    }
+//
+//                    //带上依赖 ，否则会报错
+//                    pom.withXml {
+//                        def dependenciesNode = asNode().appendNode('dependencies')
+//
+//                        def scopes = [configurations.implementation]
+//                        if (configurations.hasProperty("api")) {
+//                            scopes.add(configurations.api)
+//                        }
+//                        if (configurations.hasProperty("implementation")) {
+//                            scopes.add(configurations.implementation)
+//                        }
+//                        if (configurations.hasProperty("debugImplementation")) {
+//                            scopes.add(configurations.debugImplementation)
+//                        }
+//                        if (configurations.hasProperty("releaseImplementation")) {
+//                            scopes.add(configurations.releaseImplementation)
+//                        }
+//
+////                    if (project.ext.targetType != "jar") {
+////                        scopes.add(configurations.provided)
+////                    }
+//
+//                        scopes.each { scope ->
+//                            scope.allDependencies.each {
+//                                if (it instanceof ModuleDependency) {
+//                                    boolean isTransitive = ((ModuleDependency) it).transitive
+//                                    if (!isTransitive) {
+//                                        println "<<<< not transitive dependency: [${it.group}, ${it.name}, ${it.version}]"
+//                                        return
+//                                    }
+//                                }
+//
+//                                if (it.group == "${project.rootProject.name}.libs" || it.version == 'unspecified') {
+//                                    return
+//                                }
+//
+//                                if (it.group && it.name && it.version) {
+//                                    def dependencyNode = dependenciesNode.appendNode('dependency')
+//                                    dependencyNode.appendNode('groupId', it.group)
+//                                    dependencyNode.appendNode('artifactId', it.name)
+//                                    dependencyNode.appendNode('version', it.version)
+//                                    dependencyNode.appendNode('scope', scope.name)
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
+//}
+
+
+//android.libraryVariants.all { variant ->
+//    def String buildType = variant.buildType.name
+//    def flavorName = variant.flavorName
+//    println("buildType=" + variant.buildType.name)
+//    println("variant=" + variant.flavorName)
+//
+//    //遍历发布变种的release包
+//    if ("release".equals(buildType)) {
+//        mavenPublish {
+//            coordinates("com.mirko.android", project.name, "1.0.0-SNAPSHOT")
+//
+//            sonatypeHost = null
+//            releaseSigningEnabled = false
+////            androidVariantToPublish = "${flavorName}Release"
+////            androidVariantToPublish = "firstRelease"
+////            androidVariantToPublish = "secondRelease"
+//        }
+
+//mavenPublishing {
+//    coordinates("example.mylibrary", project.name+"-first", "1.0.3-first-SNAPSHOT")
+////    androidVariantToPublish = "firstRelease"
+//}
+
+//    }
+//}
 
 ////这是 另一个 apply plugin: 'com.vanniktech.maven.publish' 的配置
 //mavenPublish {
