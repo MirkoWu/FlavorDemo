@@ -96,8 +96,8 @@ android {
 //    repositories {
 //        maven {
 //            project.configParams()
-//            val releasesRepoUrl = "https://artifactory.nioint.com/artifactory/dd-maven-releases-virtual/"
-//            val snapshotsRepoUrl = "https://artifactory.nioint.com/artifactory/dd-maven-snapshots-virtual/"
+//            val releasesRepoUrl = "https://xxx.xxx.com/artifactory/dd-maven-releases-virtual/"
+//            val snapshotsRepoUrl = "https://xxx.xxx.com/artifactory/dd-maven-snapshots-virtual/"
 //            url = uri(
 //                if (!project.buildRelease) snapshotsRepoUrl else releasesRepoUrl
 //            )
